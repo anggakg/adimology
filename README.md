@@ -74,15 +74,21 @@ Aplikasi ini membutuhkan beberapa tabel di Supabase. Jalankan script SQL yang ad
 
 Agar aplikasi dapat mengambil data terbaru dari Stockbit tanpa input token manual terus-menerus, gunakan ekstensi yang tersedia di folder `stockbit-token-extension/`:
 
-1. Buka `chrome://extensions/` di Chrome.
-2. Aktifkan **Developer mode** di pojok kanan atas.
-3. Klik **Load unpacked** dan pilih folder `stockbit-token-extension`.
-4. Sesuaikan URL endpoint di `background.js` agar mengarah ke domain aplikasi Anda.
-5. Ekstensi akan otomatis menangkap token saat Anda membuka Stockbit dan mengirimkannya ke database Supabase Anda.
+1.  **Siapkan File Konfigurasi**:
+    Salin file `.example` menjadi file asli di dalam folder `stockbit-token-extension/`:
+    ```bash
+    cp stockbit-token-extension/manifest.json.example stockbit-token-extension/manifest.json
+    cp stockbit-token-extension/background.js.example stockbit-token-extension/background.js
+    ```
+2.  **Konfigurasi Domain**:
+    - Buka `manifest.json` dan ganti `YOUR_APP_DOMAIN` dengan domain Netlify Anda.
+    - Buka `background.js` dan ganti `YOUR_APP_DOMAIN` pada bagian `endpoint` dengan domain Netlify Anda.
+3.  **Install Ekstensi**:
+    - Buka `chrome://extensions/` di Chrome.
+    - Aktifkan **Developer mode** di pojok kanan atas.
+    - Klik **Load unpacked** dan pilih folder `stockbit-token-extension`.
+4.  **Selesai**: Ekstensi akan otomatis menangkap token saat Anda membuka Stockbit dan mengirimkannya ke database Supabase Anda.
 
 ## 📄 Lisensi
 
 Proyek ini dibuat untuk tujuan edukasi dan penggunaan pribadi. Pastikan untuk mematuhi ketentuan penggunaan layanan pihak ketiga yang digunakan.
-
----
-Dibuat dengan ❤️ oleh [Adimology Team]

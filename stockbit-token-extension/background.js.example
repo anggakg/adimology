@@ -25,7 +25,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 );
 
 function syncToken(token) {
-  const endpoint = `https://stockbite.netlify.app/api/update-token/${token}`;
+  // Ganti YOUR_APP_DOMAIN dengan domain netlify Anda
+  const endpoint = `https://YOUR_APP_DOMAIN.netlify.app/api/update-token/${token}`;
 
   fetch(endpoint)
     .then((response) => {
