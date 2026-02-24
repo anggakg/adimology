@@ -16,10 +16,13 @@
 
 ## Changelog
 
+### v0.4.1 (2026-02-24)
+- **Security Hardening**: Implementasi global API protection menggunakan **Next.js 16 Proxy**.
+- **API Request Optimization**: Implementasi *request deduplication* pada indikator status dan pembatasan minimal 4 karakter pada input emiten untuk menghemat kuota request.
+
 ### v0.4.0 (2026-02-23)
 - **High-Fidelity Copy Image**: Migrasi dari `html2canvas` ke `html-to-image` untuk hasil capture yang lebih tajam (HD) dan akurat.
-- **Glassmorphism Support**: Perbaikan masalah warna kusam/abu-abu saat capture dengan menonaktifkan backdrop-filter sementara selama proses pengambilan gambar.
-- **Transparent Corners**: Optimalisasi capture spesifik pada elemen card untuk menghasilkan pojok yang transparan (rounded) saat di-paste ke aplikasi pihak ketiga (WhatsApp/Telegram).
+- **Transparent Corners**: Optimalisasi capture spesifik pada elemen card untuk menghasilkan pojok yang transparan (rounded).
 - **Clean Capture**: Penambahan fitur filter otomatis untuk menyembunyikan tombol aksi footer dari hasil gambar copy.
 
 ### v0.3.3 (2026-02-22)
