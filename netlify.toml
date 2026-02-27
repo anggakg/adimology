@@ -10,3 +10,30 @@
 
 [functions."analyze-watchlist"]
   schedule = "0 11 * * *"
+
+# Jangan cache HTML agar subpages tidak stale setelah deploy baru
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/history"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/summary"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/watchlist"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Static Next.js assets OK untuk di-cache panjang (sudah content-hashed)
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
