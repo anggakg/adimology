@@ -28,6 +28,20 @@ export default function RootLayout({
                   }
                 } catch (e) {}
               })();
+              // Auto-reload on ChunkLoadError (stale deploy cache)
+              window.addEventListener('error', function(e) {
+                if (e && e.message && (
+                  e.message.includes('ChunkLoadError') ||
+                  e.message.includes('Loading chunk') ||
+                  e.message.includes('Failed to fetch dynamically imported module')
+                )) {
+                  var key = 'chunk_reload_' + location.pathname;
+                  if (!sessionStorage.getItem(key)) {
+                    sessionStorage.setItem(key, '1');
+                    location.reload();
+                  }
+                }
+              });
             `,
           }}
         />
