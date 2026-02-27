@@ -28,20 +28,32 @@ export default function RootLayout({
                   }
                 } catch (e) {}
               })();
-              // Auto-reload on ChunkLoadError (stale deploy cache)
-              window.addEventListener('error', function(e) {
-                if (e && e.message && (
-                  e.message.includes('ChunkLoadError') ||
-                  e.message.includes('Loading chunk') ||
-                  e.message.includes('Failed to fetch dynamically imported module')
-                )) {
+              // Auto-reload on ChunkLoadError (stale deploy chunks)
+              function handleChunkError(msg) {
+                if (!msg) return;
+                if (
+                  msg.includes('ChunkLoadError') ||
+                  msg.includes('Loading chunk') ||
+                  msg.includes('Failed to fetch dynamically imported module') ||
+                  msg.includes('Importing a module script failed')
+                ) {
                   var key = 'chunk_reload_' + location.pathname;
                   if (!sessionStorage.getItem(key)) {
                     sessionStorage.setItem(key, '1');
                     location.reload();
                   }
                 }
+              }
+              // Catches sync errors
+              window.addEventListener('error', function(e) {
+                handleChunkError(e && e.message);
               });
+              // Catches async/dynamic import errors (ChunkLoadError comes as unhandledrejection)
+              window.addEventListener('unhandledrejection', function(e) {
+                var msg = e && e.reason && (e.reason.message || String(e.reason));
+                handleChunkError(msg);
+              });
+
             `,
           }}
         />
