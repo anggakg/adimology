@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchMarketDetector, fetchOrderbook, getTopBroker, fetchEmitenInfo } from '@/lib/stockbit';
+import { fetchMarketDetector, fetchOrderbook, getTopBroker, fetchEmitenInfo, parseLot } from '@/lib/stockbit';
 import { calculateTargets } from '@/lib/calculations';
+import { getStockPriceByDate } from '@/lib/supabase';
 
 export interface WatchlistScanResult {
   emiten: string;
@@ -20,7 +21,9 @@ export interface WatchlistScanResult {
 /**
  * POST /api/watchlist-scan
  * Body: { symbols: string[], fromDate: string, toDate: string }
- * Runs Adimology scan for each symbol in batch
+ * Runs Adimology scan for each symbol in batch.
+ * For past dates, market data (harga/ara/arb/bid/offer) is taken from DB
+ * same as /api/stock/route.ts so results match the Calculator page.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -44,6 +47,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isToday = toDate === todayStr;
 
     // Process all symbols in parallel with concurrency limit
     const CONCURRENCY = 5;
@@ -76,17 +82,26 @@ export async function POST(request: NextRequest) {
               };
             }
 
+            // Default: use live orderbook data
             const offerPrices = (obData.offer || []).map((o: any) => Number(o.price));
             const bidPrices = (obData.bid || []).map((b: any) => Number(b.price));
-            const harga = Number(obData.close);
-            const ara = offerPrices.length > 0 ? Math.max(...offerPrices) : Number(obData.high || 0);
-            const arb = bidPrices.length > 0 ? Math.min(...bidPrices) : 0;
-            const totalBid = obData.total_bid_offer?.bid?.lot
-              ? Number(obData.total_bid_offer.bid.lot.replace(/,/g, ''))
-              : 0;
-            const totalOffer = obData.total_bid_offer?.offer?.lot
-              ? Number(obData.total_bid_offer.offer.lot.replace(/,/g, ''))
-              : 0;
+            let harga = Number(obData.close);
+            let ara = offerPrices.length > 0 ? Math.max(...offerPrices) : Number(obData.high || 0);
+            let arb = bidPrices.length > 0 ? Math.min(...bidPrices) : 0;
+            let totalBid = parseLot(obData.total_bid_offer?.bid?.lot || '0');
+            let totalOffer = parseLot(obData.total_bid_offer?.offer?.lot || '0');
+
+            // For past dates: override with DB historical data (same as Calculator)
+            if (!isToday) {
+              const histPrice = await getStockPriceByDate(emiten, toDate);
+              if (histPrice) {
+                harga = Number(histPrice.harga);
+                ara = Number(histPrice.ara);
+                arb = Number(histPrice.arb);
+                totalBid = Number(histPrice.total_bid);
+                totalOffer = Number(histPrice.total_offer);
+              }
+            }
 
             const calculated = calculateTargets(
               brokerData.rataRataBandar,
