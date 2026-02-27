@@ -36,18 +36,17 @@ export default function WatchlistScanTable() {
     const [sortKey, setSortKey] = useState<SortKey>('emiten');
     const [sortDir, setSortDir] = useState<SortDir>('asc');
 
-    // Default scan date = yesterday (most recent trading day with data)
+    // Default date range = last trading day
     const getYesterday = () => {
         const d = new Date();
         d.setDate(d.getDate() - 1);
-        // Skip Sunday (0) -> go to Friday
         if (d.getDay() === 0) d.setDate(d.getDate() - 2);
-        // Skip Saturday (6) -> go to Friday
         if (d.getDay() === 6) d.setDate(d.getDate() - 1);
         return d.toISOString().split('T')[0];
     };
-    const [scanDate, setScanDate] = useState<string>(getYesterday());
     const today = new Date().toISOString().split('T')[0];
+    const [fromDate, setFromDate] = useState<string>(getYesterday());
+    const [toDate, setToDate] = useState<string>(getYesterday());
 
     // Load watchlist groups
     useEffect(() => {
@@ -116,7 +115,7 @@ export default function WatchlistScanTable() {
                 const res = await fetch('/api/watchlist-scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ symbols: batch, fromDate: scanDate, toDate: scanDate }),
+                    body: JSON.stringify({ symbols: batch, fromDate, toDate }),
                 });
                 const json = await res.json();
                 if (json.success && Array.isArray(json.data)) {
@@ -131,8 +130,8 @@ export default function WatchlistScanTable() {
         }
 
         setScanning(false);
-        setLastScanned(`${scanDate} · ${new Date().toLocaleTimeString('id-ID')}`);
-    }, [watchlistItems, scanDate, scanning]);
+        setLastScanned(`${fromDate === toDate ? fromDate : `${fromDate} → ${toDate}`} · ${new Date().toLocaleTimeString('id-ID')}`);
+    }, [watchlistItems, fromDate, toDate, scanning]);
 
     // Sort
     const handleSort = (key: SortKey) => {
@@ -242,14 +241,14 @@ export default function WatchlistScanTable() {
                         </select>
                     )}
 
-                    {/* Date Picker */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {/* Date Range Picker */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                         <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Tanggal:</label>
                         <input
                             type="date"
-                            value={scanDate}
+                            value={fromDate}
                             max={today}
-                            onChange={e => { setScanDate(e.target.value); setScanResults([]); setLastScanned(null); }}
+                            onChange={e => { setFromDate(e.target.value); setScanResults([]); setLastScanned(null); }}
                             style={{
                                 padding: '0.45rem 0.6rem',
                                 fontSize: '0.82rem',
@@ -261,7 +260,25 @@ export default function WatchlistScanTable() {
                                 cursor: 'pointer',
                             }}
                         />
-                        {scanDate === today && (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>→</span>
+                        <input
+                            type="date"
+                            value={toDate}
+                            min={fromDate}
+                            max={today}
+                            onChange={e => { setToDate(e.target.value); setScanResults([]); setLastScanned(null); }}
+                            style={{
+                                padding: '0.45rem 0.6rem',
+                                fontSize: '0.82rem',
+                                background: 'var(--bg-secondary)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '10px',
+                                color: 'var(--text-primary)',
+                                outline: 'none',
+                                cursor: 'pointer',
+                            }}
+                        />
+                        {(fromDate === today || toDate === today) && (
                             <span style={{
                                 fontSize: '0.68rem',
                                 color: '#f59e0b',
