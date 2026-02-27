@@ -241,43 +241,31 @@ export default function WatchlistScanTable() {
                         </select>
                     )}
 
-                    {/* Date Range Picker */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {/* Date Range Picker - same as Calculator */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Tanggal:</label>
-                        <input
-                            type="date"
-                            value={fromDate}
-                            max={today}
-                            onChange={e => { setFromDate(e.target.value); setScanResults([]); setLastScanned(null); }}
-                            style={{
-                                padding: '0.45rem 0.6rem',
-                                fontSize: '0.82rem',
-                                background: 'var(--bg-secondary)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '10px',
-                                color: 'var(--text-primary)',
-                                outline: 'none',
-                                cursor: 'pointer',
-                            }}
-                        />
-                        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>→</span>
-                        <input
-                            type="date"
-                            value={toDate}
-                            min={fromDate}
-                            max={today}
-                            onChange={e => { setToDate(e.target.value); setScanResults([]); setLastScanned(null); }}
-                            style={{
-                                padding: '0.45rem 0.6rem',
-                                fontSize: '0.82rem',
-                                background: 'var(--bg-secondary)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '10px',
-                                color: 'var(--text-primary)',
-                                outline: 'none',
-                                cursor: 'pointer',
-                            }}
-                        />
+                        <div className="date-range-group" style={{ height: '38px', borderRadius: '12px' }}>
+                            <input
+                                type="date"
+                                className="input-field compact-input"
+                                style={{ padding: '0', fontSize: '0.75rem', width: '95px', textAlign: 'center' }}
+                                value={fromDate}
+                                max={today}
+                                onChange={e => { setFromDate(e.target.value); setScanResults([]); setLastScanned(null); }}
+                                onClick={(e) => (e.currentTarget as HTMLInputElement).showPicker?.()}
+                            />
+                            <span className="date-separator" style={{ margin: '0 1px', padding: 0 }}>→</span>
+                            <input
+                                type="date"
+                                className="input-field compact-input"
+                                style={{ padding: '0', fontSize: '0.75rem', width: '95px', textAlign: 'center' }}
+                                value={toDate}
+                                min={fromDate}
+                                max={today}
+                                onChange={e => { setToDate(e.target.value); setScanResults([]); setLastScanned(null); }}
+                                onClick={(e) => (e.currentTarget as HTMLInputElement).showPicker?.()}
+                            />
+                        </div>
                         {(fromDate === today || toDate === today) && (
                             <span style={{
                                 fontSize: '0.68rem',
