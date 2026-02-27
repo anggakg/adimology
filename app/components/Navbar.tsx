@@ -40,7 +40,7 @@ const Navbar = () => {
         {/* Desktop View */}
         <div className="nav-desktop-actions">
           <div className="nav-links">
-            <Link
+            <a
               href="/"
               style={{
                 textDecoration: 'none',
@@ -53,8 +53,8 @@ const Navbar = () => {
               }}
             >
               Calculator
-            </Link>
-            <Link
+            </a>
+            <a
               href="/history"
               style={{
                 textDecoration: 'none',
@@ -67,8 +67,8 @@ const Navbar = () => {
               }}
             >
               History
-            </Link>
-            <Link
+            </a>
+            <a
               href="/summary"
               style={{
                 textDecoration: 'none',
@@ -81,7 +81,7 @@ const Navbar = () => {
               }}
             >
               Summary
-            </Link>
+            </a>
             <a
               href="/watchlist"
               onClick={(e) => { e.preventDefault(); window.location.href = '/watchlist'; }}
@@ -152,7 +152,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <div className={`nav-mobile-menu ${isMenuOpen ? 'open' : ''}`}>
           <div className="nav-links">
-            <Link
+            <a
               href="/"
               onClick={() => setIsMenuOpen(false)}
               style={{
@@ -165,8 +165,8 @@ const Navbar = () => {
               }}
             >
               Calculator
-            </Link>
-            <Link
+            </a>
+            <a
               href="/history"
               onClick={() => setIsMenuOpen(false)}
               style={{
@@ -179,8 +179,8 @@ const Navbar = () => {
               }}
             >
               History
-            </Link>
-            <Link
+            </a>
+            <a
               href="/summary"
               onClick={() => setIsMenuOpen(false)}
               style={{
@@ -193,7 +193,7 @@ const Navbar = () => {
               }}
             >
               Summary
-            </Link>
+            </a>
             <a
               href="/watchlist"
               onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); window.location.href = '/watchlist'; }}
