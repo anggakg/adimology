@@ -40,8 +40,8 @@ const Navbar = () => {
         {/* Desktop View */}
         <div className="nav-desktop-actions">
           <div className="nav-links">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               style={{
                 textDecoration: 'none',
                 color: pathname === '/' ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -54,8 +54,8 @@ const Navbar = () => {
             >
               Calculator
             </Link>
-            <Link 
-              href="/history" 
+            <Link
+              href="/history"
               style={{
                 textDecoration: 'none',
                 color: pathname === '/history' ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -68,8 +68,8 @@ const Navbar = () => {
             >
               History
             </Link>
-            <Link 
-              href="/summary" 
+            <Link
+              href="/summary"
               style={{
                 textDecoration: 'none',
                 color: pathname === '/summary' ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -82,9 +82,23 @@ const Navbar = () => {
             >
               Summary
             </Link>
-            <a 
-              href="https://github.com/bhaktiutama/adimology" 
-              target="_blank" 
+            <Link
+              href="/watchlist"
+              style={{
+                textDecoration: 'none',
+                color: pathname === '/watchlist' ? 'var(--text-primary)' : 'var(--text-secondary)',
+                fontWeight: pathname === '/watchlist' ? 600 : 400,
+                fontSize: '0.9rem',
+                borderBottom: pathname === '/watchlist' ? '2px solid var(--accent-primary)' : '2px solid transparent',
+                paddingBottom: '2px',
+                transition: 'all 0.2s'
+              }}
+            >
+              Watchlist
+            </Link>
+            <a
+              href="https://github.com/bhaktiutama/adimology"
+              target="_blank"
               rel="noopener noreferrer"
               style={{
                 display: 'flex',
@@ -108,17 +122,17 @@ const Navbar = () => {
               onClick={() => setIsPasswordModalOpen(true)}
               className="theme-toggle-btn"
               title="Password Protection"
-              style={{ 
-                background: 'var(--bg-card)', 
-                border: '1px solid var(--border-color)', 
-                color: 'var(--text-primary)', 
-                cursor: 'pointer', 
-                display: 'flex', 
-                alignItems: 'center', 
+              style={{
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 width: '38px',
                 height: '38px',
-                borderRadius: '12px', 
+                borderRadius: '12px',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 backdropFilter: 'blur(10px)',
               }}
@@ -136,8 +150,8 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <div className={`nav-mobile-menu ${isMenuOpen ? 'open' : ''}`}>
           <div className="nav-links">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               onClick={() => setIsMenuOpen(false)}
               style={{
                 textDecoration: 'none',
@@ -150,8 +164,8 @@ const Navbar = () => {
             >
               Calculator
             </Link>
-            <Link 
-              href="/history" 
+            <Link
+              href="/history"
               onClick={() => setIsMenuOpen(false)}
               style={{
                 textDecoration: 'none',
@@ -164,8 +178,8 @@ const Navbar = () => {
             >
               History
             </Link>
-            <Link 
-              href="/summary" 
+            <Link
+              href="/summary"
               onClick={() => setIsMenuOpen(false)}
               style={{
                 textDecoration: 'none',
@@ -178,9 +192,23 @@ const Navbar = () => {
             >
               Summary
             </Link>
-            <a 
-              href="https://github.com/bhaktiutama/adimology" 
-              target="_blank" 
+            <Link
+              href="/watchlist"
+              onClick={() => setIsMenuOpen(false)}
+              style={{
+                textDecoration: 'none',
+                color: pathname === '/watchlist' ? 'var(--text-primary)' : 'var(--text-secondary)',
+                fontWeight: pathname === '/watchlist' ? 600 : 400,
+                fontSize: '1rem',
+                padding: '0.5rem 0',
+                transition: 'all 0.2s'
+              }}
+            >
+              Watchlist
+            </Link>
+            <a
+              href="https://github.com/bhaktiutama/adimology"
+              target="_blank"
               rel="noopener noreferrer"
               style={{
                 display: 'flex',
@@ -211,13 +239,13 @@ const Navbar = () => {
               <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Password</span>
               <button
                 onClick={() => { setIsPasswordModalOpen(true); setIsMenuOpen(false); }}
-                style={{ 
-                  background: 'var(--bg-card)', 
-                  border: '1px solid var(--border-color)', 
-                  color: 'var(--text-primary)', 
-                  cursor: 'pointer', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   width: '34px',
                   height: '34px',
