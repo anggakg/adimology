@@ -15,11 +15,12 @@ interface ScanResult {
     target_max?: number;
     ara?: number;
     arb?: number;
+    net_volume?: number;
     status: 'success' | 'error' | 'no_data';
     error?: string;
 }
 
-type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'target_realistis' | 'target_max' | 'upside_r1' | 'upside_max' | 'sector';
+type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'net_volume' | 'target_realistis' | 'target_max' | 'upside_r1' | 'upside_max' | 'sector';
 type SortDir = 'asc' | 'desc';
 
 export default function WatchlistScanTable() {
@@ -408,6 +409,9 @@ export default function WatchlistScanTable() {
                                     <th style={thRight} onClick={() => handleSort('barang_bandar')}>
                                         Vol Bandar <SortIcon col="barang_bandar" />
                                     </th>
+                                    <th style={thRight} onClick={() => handleSort('net_volume')}>
+                                        Net Vol <SortIcon col="net_volume" />
+                                    </th>
                                     <th style={thRight} onClick={() => handleSort('target_realistis')}>
                                         Target R1 <SortIcon col="target_realistis" />
                                     </th>
@@ -471,6 +475,18 @@ export default function WatchlistScanTable() {
                                             {/* Vol Bandar */}
                                             <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                                                 {formatNum(row.barang_bandar)}
+                                            </td>
+
+                                            {/* Net Volume */}
+                                            <td style={{
+                                                padding: '0.8rem 1rem',
+                                                textAlign: 'right',
+                                                fontVariantNumeric: 'tabular-nums',
+                                                fontSize: '0.82rem',
+                                                fontWeight: 600,
+                                                color: row.net_volume == null ? 'var(--text-muted)' : row.net_volume >= 0 ? 'var(--accent-success)' : '#f87171',
+                                            }}>
+                                                {row.net_volume == null ? '-' : `${row.net_volume >= 0 ? '+' : ''}${formatNum(row.net_volume)}`}
                                             </td>
 
                                             {/* Target R1 */}

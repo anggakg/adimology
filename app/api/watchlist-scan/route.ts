@@ -14,6 +14,7 @@ export interface WatchlistScanResult {
   target_max?: number;
   ara?: number;
   arb?: number;
+  net_volume?: number;
   status: 'success' | 'error' | 'no_data';
   error?: string;
 }
@@ -124,6 +125,7 @@ export async function POST(request: NextRequest) {
               target_max: calculated.targetMax,
               ara,
               arb,
+              net_volume: Math.round((totalBid - totalOffer) / 100),
               status: 'success',
             };
           } catch (err) {
