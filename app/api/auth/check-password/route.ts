@@ -14,10 +14,12 @@ export async function GET(request: Request) {
 
     // Also check if valid session exists
     const cookieHeader = request.headers.get('cookie') || '';
-    const sessionCookie = cookieHeader
+    const sessionCookiePart = cookieHeader
       .split(';')
-      .find(c => c.trim().startsWith(`${SESSION_NAME}=`))
-      ?.split('=')[1];
+      .find(c => c.trim().startsWith(`${SESSION_NAME}=`));
+    const sessionCookie = sessionCookiePart
+      ? sessionCookiePart.trim().slice(`${SESSION_NAME}=`.length)
+      : undefined;
 
     let isAuthenticated = false;
     if (sessionCookie) {
