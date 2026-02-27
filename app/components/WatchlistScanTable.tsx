@@ -19,7 +19,7 @@ interface ScanResult {
     error?: string;
 }
 
-type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'target_realistis' | 'target_max' | 'upside_r1' | 'sector';
+type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'target_realistis' | 'target_max' | 'upside_r1' | 'upside_max' | 'sector';
 type SortDir = 'asc' | 'desc';
 
 export default function WatchlistScanTable() {
@@ -155,6 +155,9 @@ export default function WatchlistScanTable() {
             if (sortKey === 'upside_r1') {
                 av = a.harga && a.target_realistis ? ((a.target_realistis - a.harga) / a.harga) * 100 : -9999;
                 bv = b.harga && b.target_realistis ? ((b.target_realistis - b.harga) / b.harga) * 100 : -9999;
+            } else if (sortKey === 'upside_max') {
+                av = a.harga && a.target_max ? ((a.target_max - a.harga) / a.harga) * 100 : -9999;
+                bv = b.harga && b.target_max ? ((b.target_max - b.harga) / b.harga) * 100 : -9999;
             } else {
                 av = (a as any)[sortKey] ?? '';
                 bv = (b as any)[sortKey] ?? '';
@@ -414,6 +417,9 @@ export default function WatchlistScanTable() {
                                     <th style={thRight} onClick={() => handleSort('upside_r1')}>
                                         Upside R1 <SortIcon col="upside_r1" />
                                     </th>
+                                    <th style={thRight} onClick={() => handleSort('upside_max')}>
+                                        Upside Max <SortIcon col="upside_max" />
+                                    </th>
                                     <th style={{ ...thStyle, textAlign: 'center' }}>Status</th>
                                 </tr>
                             </thead>
@@ -490,6 +496,11 @@ export default function WatchlistScanTable() {
                                             {/* Upside R1 */}
                                             <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontWeight: 600, fontSize: '0.85rem', color: pctColor(row.harga, row.target_realistis) }}>
                                                 {formatPct(row.harga, row.target_realistis)}
+                                            </td>
+
+                                            {/* Upside Max */}
+                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontWeight: 600, fontSize: '0.85rem', color: pctColor(row.harga, row.target_max) }}>
+                                                {formatPct(row.harga, row.target_max)}
                                             </td>
 
                                             {/* Status Badge */}
