@@ -36,6 +36,19 @@ export default function WatchlistScanTable() {
     const [sortKey, setSortKey] = useState<SortKey>('emiten');
     const [sortDir, setSortDir] = useState<SortDir>('asc');
 
+    // Default scan date = yesterday (most recent trading day with data)
+    const getYesterday = () => {
+        const d = new Date();
+        d.setDate(d.getDate() - 1);
+        // Skip Sunday (0) -> go to Friday
+        if (d.getDay() === 0) d.setDate(d.getDate() - 2);
+        // Skip Saturday (6) -> go to Friday
+        if (d.getDay() === 6) d.setDate(d.getDate() - 1);
+        return d.toISOString().split('T')[0];
+    };
+    const [scanDate, setScanDate] = useState<string>(getYesterday());
+    const today = new Date().toISOString().split('T')[0];
+
     // Load watchlist groups
     useEffect(() => {
         const fetchGroups = async () => {
@@ -80,7 +93,7 @@ export default function WatchlistScanTable() {
         fetchItems();
     }, [selectedGroupId]);
 
-    const today = new Date().toISOString().split('T')[0];
+
 
     // Run scan
     const handleScan = useCallback(async () => {
@@ -103,7 +116,7 @@ export default function WatchlistScanTable() {
                 const res = await fetch('/api/watchlist-scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ symbols: batch, fromDate: today, toDate: today }),
+                    body: JSON.stringify({ symbols: batch, fromDate: scanDate, toDate: scanDate }),
                 });
                 const json = await res.json();
                 if (json.success && Array.isArray(json.data)) {
@@ -118,8 +131,8 @@ export default function WatchlistScanTable() {
         }
 
         setScanning(false);
-        setLastScanned(new Date().toLocaleTimeString('id-ID'));
-    }, [watchlistItems, today, scanning]);
+        setLastScanned(`${scanDate} · ${new Date().toLocaleTimeString('id-ID')}`);
+    }, [watchlistItems, scanDate, scanning]);
 
     // Sort
     const handleSort = (key: SortKey) => {
@@ -228,6 +241,37 @@ export default function WatchlistScanTable() {
                             ))}
                         </select>
                     )}
+
+                    {/* Date Picker */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Tanggal:</label>
+                        <input
+                            type="date"
+                            value={scanDate}
+                            max={today}
+                            onChange={e => { setScanDate(e.target.value); setScanResults([]); setLastScanned(null); }}
+                            style={{
+                                padding: '0.45rem 0.6rem',
+                                fontSize: '0.82rem',
+                                background: 'var(--bg-secondary)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '10px',
+                                color: 'var(--text-primary)',
+                                outline: 'none',
+                                cursor: 'pointer',
+                            }}
+                        />
+                        {scanDate === today && (
+                            <span style={{
+                                fontSize: '0.68rem',
+                                color: '#f59e0b',
+                                background: 'rgba(245,158,11,0.12)',
+                                padding: '2px 6px',
+                                borderRadius: '6px',
+                                whiteSpace: 'nowrap',
+                            }}>⚠️ Market buka s/d 16:15</span>
+                        )}
+                    </div>
 
                     {/* Scan Button */}
                     <button
