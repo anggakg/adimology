@@ -28,6 +28,7 @@ export default function WatchlistScanTable() {
     const [watchlistItems, setWatchlistItems] = useState<{ symbol: string }[]>([]);
     const [scanResults, setScanResults] = useState<ScanResult[]>([]);
     const [loadingGroups, setLoadingGroups] = useState(true);
+    const [loadingItems, setLoadingItems] = useState(false);
     const [scanning, setScanning] = useState(false);
     const [scanProgress, setScanProgress] = useState(0);
     const [scanTotal, setScanTotal] = useState(0);
@@ -74,6 +75,8 @@ export default function WatchlistScanTable() {
         if (!selectedGroupId) return;
         setScanResults([]);
         setLastScanned(null);
+        setWatchlistItems([]); // clear immediately so user can't scan stale data
+        setLoadingItems(true);
         const fetchItems = async () => {
             try {
                 const res = await fetch(`/api/watchlist?groupId=${selectedGroupId}`);
@@ -87,6 +90,8 @@ export default function WatchlistScanTable() {
                 }
             } catch {
                 setError('Gagal memuat items watchlist');
+            } finally {
+                setLoadingItems(false);
             }
         };
         fetchItems();
@@ -281,19 +286,19 @@ export default function WatchlistScanTable() {
                     {/* Scan Button */}
                     <button
                         onClick={handleScan}
-                        disabled={scanning || watchlistItems.length === 0}
+                        disabled={scanning || loadingItems || watchlistItems.length === 0}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.5rem',
                             padding: '0.55rem 1.25rem',
-                            background: scanning ? 'var(--bg-secondary)' : 'linear-gradient(135deg, var(--accent-primary), #7c3aed)',
+                            background: (scanning || loadingItems) ? 'var(--bg-secondary)' : 'linear-gradient(135deg, var(--accent-primary), #7c3aed)',
                             border: 'none',
                             borderRadius: '10px',
-                            color: scanning ? 'var(--text-muted)' : '#fff',
+                            color: (scanning || loadingItems) ? 'var(--text-muted)' : '#fff',
                             fontWeight: 600,
                             fontSize: '0.85rem',
-                            cursor: scanning || watchlistItems.length === 0 ? 'not-allowed' : 'pointer',
+                            cursor: (scanning || loadingItems || watchlistItems.length === 0) ? 'not-allowed' : 'pointer',
                             transition: 'all 0.2s',
                             whiteSpace: 'nowrap',
                         }}
