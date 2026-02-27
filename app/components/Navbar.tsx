@@ -82,8 +82,9 @@ const Navbar = () => {
             >
               Summary
             </Link>
-            <Link
+            <a
               href="/watchlist"
+              onClick={(e) => { e.preventDefault(); window.location.href = '/watchlist'; }}
               style={{
                 textDecoration: 'none',
                 color: pathname === '/watchlist' ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -91,11 +92,12 @@ const Navbar = () => {
                 fontSize: '0.9rem',
                 borderBottom: pathname === '/watchlist' ? '2px solid var(--accent-primary)' : '2px solid transparent',
                 paddingBottom: '2px',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                cursor: 'pointer',
               }}
             >
               Watchlist
-            </Link>
+            </a>
             <a
               href="https://github.com/bhaktiutama/adimology"
               target="_blank"
@@ -192,20 +194,21 @@ const Navbar = () => {
             >
               Summary
             </Link>
-            <Link
+            <a
               href="/watchlist"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); window.location.href = '/watchlist'; }}
               style={{
                 textDecoration: 'none',
                 color: pathname === '/watchlist' ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontWeight: pathname === '/watchlist' ? 600 : 400,
                 fontSize: '1rem',
                 padding: '0.5rem 0',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                cursor: 'pointer',
               }}
             >
               Watchlist
-            </Link>
+            </a>
             <a
               href="https://github.com/bhaktiutama/adimology"
               target="_blank"
