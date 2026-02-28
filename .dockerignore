@@ -1,0 +1,29 @@
+# Build artifacts
+.next
+node_modules
+
+# Environment / secrets
+.env.local
+.env*.local
+
+# Version control
+.git
+.gitignore
+.github
+
+# Dev / IDE
+.vscode
+*.log
+
+# Netlify (not needed in Docker)
+netlify
+netlify.toml
+
+# Docs
+docs
+README.md
+README.docker.md
+
+# Test files
+test-api.mjs
+stockbit-token-extension

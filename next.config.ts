@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Required for Docker: generates a minimal self-contained server in .next/standalone
+  output: 'standalone',
   async headers() {
     return [
       // Static Next.js assets: cache forever (content-hashed filenames)

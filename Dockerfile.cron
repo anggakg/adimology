@@ -1,0 +1,9 @@
+# Cron container — reuses node:20-alpine (same as web build, no extra pull needed)
+FROM node:20-alpine
+
+RUN apk add --no-cache curl
+
+COPY docker/cron/trigger.sh /trigger.sh
+RUN chmod +x /trigger.sh
+
+CMD ["crond", "-f", "-l", "2"]

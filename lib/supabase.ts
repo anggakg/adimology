@@ -1,9 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Lazy initialization — client is created on first use, not at module load time.
+// This prevents build-time crashes when NEXT_PUBLIC_SUPABASE_URL is not available.
+let _supabase: SupabaseClient | null = null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      throw new Error('Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    }
+    _supabase = createClient(url, key);
+  }
+  return _supabase;
+}
+
+// Proxy object: behaves like the original `supabase` but initializes lazily
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    return (getSupabase() as any)[prop];
+  },
+});
 
 /**
  * Save stock query to database
@@ -93,8 +111,8 @@ export async function getTokenStatus(): Promise<TokenStatus> {
   const now = new Date();
   const expiresAt = data.expires_at ? new Date(data.expires_at) : null;
   const isExpired = expiresAt ? expiresAt < now : false;
-  const hoursUntilExpiry = expiresAt 
-    ? (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60) 
+  const hoursUntilExpiry = expiresAt
+    ? (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)
     : undefined;
   const isExpiringSoon = hoursUntilExpiry !== undefined && hoursUntilExpiry <= 1 && hoursUntilExpiry > 0;
 
@@ -115,16 +133,16 @@ export async function getTokenStatus(): Promise<TokenStatus> {
  * Upsert session value with optional expiry
  */
 export async function upsertSession(
-  key: string, 
-  value: string, 
+  key: string,
+  value: string,
   expiresAt?: Date
 ) {
   const { data, error } = await supabase
     .from('session')
     .upsert(
-      { 
-        key, 
-        value, 
+      {
+        key,
+        value,
         updated_at: new Date().toISOString(),
         expires_at: expiresAt?.toISOString() || null,
         is_valid: true,
@@ -172,7 +190,7 @@ export async function invalidateToken() {
 export async function setTokenExpiry(hoursFromNow: number = 24) {
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + hoursFromNow);
-  
+
   const { error } = await supabase
     .from('session')
     .update({ expires_at: expiresAt.toISOString() })
@@ -699,7 +717,7 @@ export async function getEmitenSummaryStats(limit: number = 5) {
 
     // Calculate bandar frequencies
     const bandarCounts: Record<string, number> = {};
-    
+
     records.forEach(r => {
       if (r.max_harga && r.target_realistis && r.max_harga >= r.target_realistis) {
         hitR1++;
@@ -707,7 +725,7 @@ export async function getEmitenSummaryStats(limit: number = 5) {
       if (r.max_harga && r.target_max && r.max_harga >= r.target_max) {
         hitMax++;
       }
-      
+
       if (r.bandar) {
         bandarCounts[r.bandar] = (bandarCounts[r.bandar] || 0) + 1;
       }
@@ -871,8 +889,8 @@ export async function getCachedWatchlistItems(watchlistId: number): Promise<{ it
     company_code: row.symbol, // For compatibility
     company_name: row.emiten_cache?.name || '',
     sector: row.emiten_cache?.sector || undefined,
-    last_price: row.emiten_cache?.last_price !== null && row.emiten_cache?.last_price !== undefined 
-      ? Number(row.emiten_cache.last_price) 
+    last_price: row.emiten_cache?.last_price !== null && row.emiten_cache?.last_price !== undefined
+      ? Number(row.emiten_cache.last_price)
       : 0,
     percent: row.emiten_cache?.percent || '0',
   }));

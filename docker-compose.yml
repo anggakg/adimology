@@ -1,0 +1,39 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adimology-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/').then(()=>process.exit(0)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.cron
+    container_name: adimology-cron
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    env_file:
+      - .env.local
+    environment:
+      - APP_INTERNAL_URL=http://web:3000
+    volumes:
+      - ./docker/cron/crontab:/etc/crontabs/root:ro
+      - cron-logs:/var/log
+
+volumes:
+  cron-logs:
