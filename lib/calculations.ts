@@ -30,8 +30,8 @@ export function calculateTargets(
   // Calculate Fraksi
   const fraksi = getFraksi(harga);
 
-  // Total Papan = (ARA - ARB) / Fraksi
-  const totalPapan = (ara - arb) / fraksi;
+  // Total Papan = (ARA - ARB) / Fraksi + 1 (mencakup harga batas bawah)
+  const totalPapan = ((ara - arb) / fraksi) + 1;
 
   // Rata rata Bid Ofer = (Total Bid + Total Offer) / Total Papan
   const rataRataBidOfer = (totalBid + totalOffer) / totalPapan;

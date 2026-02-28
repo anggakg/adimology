@@ -70,6 +70,8 @@ export interface OrderbookData {
   high: number;
   ara: { value: string };
   arb: { value: string };
+  upper_limit?: string;
+  lower_limit?: string;
   offer: { price: string; que_num: string; volume: string; change_percentage: string }[];
   bid: { price: string; que_num: string; volume: string; change_percentage: string }[];
   total_bid_offer: {
