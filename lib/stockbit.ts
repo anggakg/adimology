@@ -82,13 +82,13 @@ async function handleApiResponse(response: Response, apiName: string): Promise<v
     cachedToken = null;
     throw new TokenExpiredError(`${apiName}: Token expired or invalid (401)`);
   }
-  
+
   if (!response.ok) {
     throw new Error(`${apiName} error: ${response.status} ${response.statusText}`);
   }
-  
+
   // Token is valid - update last used timestamp (fire and forget)
-  updateTokenLastUsed().catch(() => {});
+  updateTokenLastUsed().catch(() => { });
 }
 
 /**
@@ -97,14 +97,15 @@ async function handleApiResponse(response: Response, apiName: string): Promise<v
 export async function fetchMarketDetector(
   emiten: string,
   fromDate: string,
-  toDate: string
+  toDate: string,
+  investorType: 'INVESTOR_TYPE_ALL' | 'INVESTOR_TYPE_FOREIGN' | 'INVESTOR_TYPE_DOMESTIC' = 'INVESTOR_TYPE_ALL'
 ): Promise<MarketDetectorResponse> {
   const url = new URL(`${STOCKBIT_BASE_URL}/marketdetectors/${emiten}`);
   url.searchParams.append('from', fromDate);
   url.searchParams.append('to', toDate);
   url.searchParams.append('transaction_type', 'TRANSACTION_TYPE_NET');
   url.searchParams.append('market_board', 'MARKET_BOARD_REGULER');
-  url.searchParams.append('investor_type', 'INVESTOR_TYPE_ALL');
+  url.searchParams.append('investor_type', investorType);
   url.searchParams.append('limit', '25');
 
   const response = await fetch(url.toString(), {
@@ -140,7 +141,7 @@ export async function fetchEmitenInfo(emiten: string): Promise<EmitenInfoRespons
   // Check cache first
   const cached = sectorCache.get(emiten.toUpperCase());
   const now = Date.now();
-  
+
   if (cached && (now - cached.timestamp) < SECTOR_CACHE_DURATION) {
     // Return cached data in the expected format
     return {
@@ -167,7 +168,7 @@ export async function fetchEmitenInfo(emiten: string): Promise<EmitenInfoRespons
   await handleApiResponse(response, 'Emiten Info API');
 
   const data: EmitenInfoResponse = await response.json();
-  
+
   // Cache the sector data
   if (data.data?.sector) {
     sectorCache.set(emiten.toUpperCase(), {
@@ -186,7 +187,7 @@ export async function fetchEmitenInfo(emiten: string): Promise<EmitenInfoRespons
  */
 export async function fetchSectors(): Promise<string[]> {
   const now = Date.now();
-  
+
   // Check cache first
   if (sectorsListCache && (now - sectorsListCache.timestamp) < SECTORS_LIST_CACHE_DURATION) {
     return sectorsListCache.sectors;
@@ -203,7 +204,7 @@ export async function fetchSectors(): Promise<string[]> {
 
   const data = await response.json();
   const sectors: string[] = (data.data || []).map((item: { name: string }) => item.name).filter(Boolean);
-  
+
   // Cache the sectors list
   sectorsListCache = {
     sectors,
@@ -332,7 +333,7 @@ export function getBrokerSummary(marketDetectorData: MarketDetectorResponse): Br
  */
 function parseKeyStatsResponse(json: KeyStatsResponse): KeyStatsData {
   const categories = json.data?.closure_fin_items_results || [];
-  
+
   const findCategory = (name: string): KeyStatsItem[] => {
     const category = categories.find(c => c.keystats_name === name);
     if (!category) return [];
@@ -353,7 +354,7 @@ function parseKeyStatsResponse(json: KeyStatsResponse): KeyStatsData {
  */
 export async function fetchKeyStats(emiten: string): Promise<KeyStatsData> {
   const url = `${STOCKBIT_BASE_URL}/keystats/ratio/v1/${emiten}?year_limit=10`;
-  
+
   const response = await fetch(url, {
     method: 'GET',
     headers: await getHeaders(),

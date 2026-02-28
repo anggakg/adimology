@@ -15,6 +15,7 @@ export interface WatchlistScanResult {
   ara?: number;
   arb?: number;
   net_volume?: number;
+  net_foreign_volume?: number;
   status: 'success' | 'error' | 'no_data';
   error?: string;
 }
@@ -63,13 +64,15 @@ export async function POST(request: NextRequest) {
       const batchResults = await Promise.all(
         batch.map(async (emiten): Promise<WatchlistScanResult> => {
           try {
-            const [marketDetectorData, orderbookData, emitenInfoData] = await Promise.all([
+            const [marketDetectorData, foreignDetectorData, orderbookData, emitenInfoData] = await Promise.all([
               fetchMarketDetector(emiten, fromDate, toDate),
+              fetchMarketDetector(emiten, fromDate, toDate, 'INVESTOR_TYPE_FOREIGN').catch(() => null),
               fetchOrderbook(emiten),
               fetchEmitenInfo(emiten).catch(() => null),
             ]);
 
             const brokerData = getTopBroker(marketDetectorData);
+            const foreignNetVol = foreignDetectorData?.data?.bandar_detector?.volume || 0;
             const sector = emitenInfoData?.data?.sector;
             const obData = orderbookData.data || (orderbookData as any);
 
@@ -87,8 +90,8 @@ export async function POST(request: NextRequest) {
             const offerPrices = (obData.offer || []).map((o: any) => Number(o.price));
             const bidPrices = (obData.bid || []).map((b: any) => Number(b.price));
             let harga = Number(obData.close);
-            let ara = offerPrices.length > 0 ? Math.max(...offerPrices) : Number(obData.high || 0);
-            let arb = bidPrices.length > 0 ? Math.min(...bidPrices) : 0;
+            let ara = Number(obData.upper_limit) || (offerPrices.length > 0 ? Math.max(...offerPrices) : Number(obData.high || 0));
+            let arb = Number(obData.lower_limit) || (bidPrices.length > 0 ? Math.min(...bidPrices) : 0);
             let totalBid = parseLot(obData.total_bid_offer?.bid?.lot || '0');
             let totalOffer = parseLot(obData.total_bid_offer?.offer?.lot || '0');
 
@@ -126,6 +129,7 @@ export async function POST(request: NextRequest) {
               ara,
               arb,
               net_volume: Math.round((totalBid - totalOffer) / 100),
+              net_foreign_volume: Math.round(foreignNetVol),
               status: 'success',
             };
           } catch (err) {
