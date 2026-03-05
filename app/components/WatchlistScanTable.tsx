@@ -17,11 +17,12 @@ interface ScanResult {
     arb?: number;
     net_volume?: number;
     net_foreign_volume?: number;
+    acc_dist?: string;
     status: 'success' | 'error' | 'no_data';
     error?: string;
 }
 
-type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'net_volume' | 'net_foreign_volume' | 'target_realistis' | 'target_max' | 'upside_r1' | 'upside_max' | 'sector';
+type SortKey = 'emiten' | 'harga' | 'bandar' | 'rata_rata_bandar' | 'barang_bandar' | 'net_volume' | 'net_foreign_volume' | 'acc_dist' | 'target_realistis' | 'target_max' | 'upside_r1' | 'upside_max' | 'sector';
 type SortDir = 'asc' | 'desc';
 
 export default function WatchlistScanTable() {
@@ -197,9 +198,9 @@ export default function WatchlistScanTable() {
     };
 
     const thStyle: React.CSSProperties = {
-        padding: '0.75rem 1rem',
+        padding: '0.5rem 0.6rem',
         textAlign: 'left',
-        fontSize: '0.75rem',
+        fontSize: '0.7rem',
         color: 'var(--text-secondary)',
         fontWeight: 600,
         whiteSpace: 'nowrap',
@@ -389,7 +390,7 @@ export default function WatchlistScanTable() {
             {sortedResults.length > 0 && (
                 <div className="glass-card-static" style={{ overflow: 'hidden' }}>
                     <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1200px' }}>
                             <thead>
                                 <tr>
                                     <th style={thStyle} onClick={() => handleSort('emiten')}>
@@ -415,6 +416,9 @@ export default function WatchlistScanTable() {
                                     </th>
                                     <th style={thRight} onClick={() => handleSort('net_foreign_volume')}>
                                         Net Vol F <SortIcon col="net_foreign_volume" />
+                                    </th>
+                                    <th style={{ ...thStyle, textAlign: 'center' }} onClick={() => handleSort('acc_dist')}>
+                                        ACC/DIST <SortIcon col="acc_dist" />
                                     </th>
                                     <th style={thRight} onClick={() => handleSort('target_realistis')}>
                                         Target R1 <SortIcon col="target_realistis" />
@@ -448,22 +452,22 @@ export default function WatchlistScanTable() {
                                             onMouseLeave={e => (e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'var(--glass-inner-glow)')}
                                         >
                                             {/* Emiten */}
-                                            <td style={{ padding: '0.8rem 1rem', fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.88rem' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', fontWeight: 700, color: 'var(--accent-primary)', fontSize: '0.85rem' }}>
                                                 {row.emiten}
                                             </td>
 
                                             {/* Sector */}
-                                            <td style={{ padding: '0.8rem 1rem', fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {row.sector || '-'}
                                             </td>
 
                                             {/* Harga */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
                                                 {isSuccess || row.harga ? formatNum(row.harga) : '-'}
                                             </td>
 
                                             {/* Bandar */}
-                                            <td style={{ padding: '0.8rem 1rem', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                                                 {isSuccess ? (row.bandar || '-') : (
                                                     isError
                                                         ? <span style={{ color: '#f87171', fontSize: '0.72rem' }}>{row.error?.slice(0, 30)}</span>
@@ -472,18 +476,18 @@ export default function WatchlistScanTable() {
                                             </td>
 
                                             {/* Avg Bandar */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem', color: 'var(--text-primary)' }}>
                                                 {formatNum(row.rata_rata_bandar)}
                                             </td>
 
                                             {/* Vol Bandar */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                                                 {formatNum(row.barang_bandar)}
                                             </td>
 
                                             {/* Net Volume */}
                                             <td style={{
-                                                padding: '0.8rem 1rem',
+                                                padding: '0.55rem 0.6rem',
                                                 textAlign: 'right',
                                                 fontVariantNumeric: 'tabular-nums',
                                                 fontSize: '0.82rem',
@@ -495,18 +499,46 @@ export default function WatchlistScanTable() {
 
                                             {/* Net Foreign Volume */}
                                             <td style={{
-                                                padding: '0.8rem 1rem',
+                                                padding: '0.6rem 0.6rem',
                                                 textAlign: 'right',
                                                 fontVariantNumeric: 'tabular-nums',
-                                                fontSize: '0.82rem',
+                                                fontSize: '0.8rem',
                                                 fontWeight: 600,
                                                 color: row.net_foreign_volume == null ? 'var(--text-muted)' : row.net_foreign_volume >= 0 ? 'var(--accent-success)' : '#f87171',
                                             }}>
                                                 {row.net_foreign_volume == null ? '-' : `${row.net_foreign_volume >= 0 ? '+' : ''}${formatNum(row.net_foreign_volume)}`}
                                             </td>
 
+                                            {/* ACC/DIST */}
+                                            <td style={{ padding: '0.6rem 0.6rem', textAlign: 'center' }}>
+                                                {row.acc_dist && row.acc_dist !== '-' ? (
+                                                    <span style={{
+                                                        display: 'inline-block',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '6px',
+                                                        fontSize: '0.72rem',
+                                                        fontWeight: 700,
+                                                        letterSpacing: '0.5px',
+                                                        background: row.acc_dist.toUpperCase() === 'ACC'
+                                                            ? 'rgba(56,239,125,0.12)'
+                                                            : row.acc_dist.toUpperCase() === 'DIST'
+                                                                ? 'rgba(248,113,113,0.12)'
+                                                                : 'rgba(255,255,255,0.06)',
+                                                        color: row.acc_dist.toUpperCase() === 'ACC'
+                                                            ? 'var(--accent-success)'
+                                                            : row.acc_dist.toUpperCase() === 'DIST'
+                                                                ? '#f87171'
+                                                                : 'var(--text-muted)',
+                                                    }}>
+                                                        {row.acc_dist.toUpperCase()}
+                                                    </span>
+                                                ) : (
+                                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>-</span>
+                                                )}
+                                            </td>
+
                                             {/* Target R1 */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right' }}>
                                                 {row.target_realistis ? (
                                                     <div>
                                                         <div style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '0.88rem', color: 'var(--accent-success)' }}>
@@ -517,7 +549,7 @@ export default function WatchlistScanTable() {
                                             </td>
 
                                             {/* Target Max */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right' }}>
                                                 {row.target_max ? (
                                                     <div style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', fontSize: '0.88rem', color: 'var(--accent-warning)' }}>
                                                         {formatNum(row.target_max)}
@@ -526,17 +558,17 @@ export default function WatchlistScanTable() {
                                             </td>
 
                                             {/* Upside R1 */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontWeight: 600, fontSize: '0.85rem', color: pctColor(row.harga, row.target_realistis) }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontWeight: 600, fontSize: '0.83rem', color: pctColor(row.harga, row.target_realistis) }}>
                                                 {formatPct(row.harga, row.target_realistis)}
                                             </td>
 
                                             {/* Upside Max */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'right', fontWeight: 600, fontSize: '0.85rem', color: pctColor(row.harga, row.target_max) }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontWeight: 600, fontSize: '0.83rem', color: pctColor(row.harga, row.target_max) }}>
                                                 {formatPct(row.harga, row.target_max)}
                                             </td>
 
                                             {/* Status Badge */}
-                                            <td style={{ padding: '0.8rem 1rem', textAlign: 'center' }}>
+                                            <td style={{ padding: '0.55rem 0.6rem', textAlign: 'center' }}>
                                                 {row.status === 'success' && (
                                                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontWeight: 600 }}>
                                                         <CheckCircle size={11} /> OK

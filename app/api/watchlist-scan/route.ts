@@ -16,6 +16,7 @@ export interface WatchlistScanResult {
   arb?: number;
   net_volume?: number;
   net_foreign_volume?: number;
+  acc_dist?: string;
   status: 'success' | 'error' | 'no_data';
   error?: string;
 }
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
 
             const brokerData = getTopBroker(marketDetectorData);
             const foreignNetVol = foreignDetectorData?.data?.bandar_detector?.volume || 0;
+            const accDist: string = marketDetectorData?.data?.bandar_detector?.broker_accdist || '-';
             const sector = emitenInfoData?.data?.sector;
             const obData = orderbookData.data || (orderbookData as any);
 
@@ -130,6 +132,7 @@ export async function POST(request: NextRequest) {
               arb,
               net_volume: Math.round((totalBid - totalOffer) / 100),
               net_foreign_volume: Math.round(foreignNetVol),
+              acc_dist: accDist,
               status: 'success',
             };
           } catch (err) {
